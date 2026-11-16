@@ -74,3 +74,12 @@ Papildini uzdevuma rediģēšanas un termiņa funkcionalitāti:
 Ierobežojumi: neviena funkcija nedrīkst būt garāka par 30 rindām (ja nepieciešams, sadali rediģēšanas sākšanu un saglabāšanu atsevišķās palīgfunkcijās), saskarne un komentāri latviešu valodā, teksta attēlošanai lieto textContent.
 Vispirms parādi plānu un atgriez tikai mainītās un jaunās funkcijas.
 
+# Papildinājums: uzdevumu kārtošana
+
+Papildini uzdevumu attēlošanas kārtību funkcijā getVisibleTasks (nemainot oriģinālo tasks masīvu un localStorage secību):
+1. Vispirms attēlo neizpildītos uzdevumus (done: false), bet izpildītos (done: true) — saraksta apakšā.
+2. Katrā grupā (neizpildītajos un izpildītajos) uzdevumus ar norādītu izpildes datumu kārto hronoloģiski no vecākā datuma uz jaunāko (steidzamākie augšā).
+3. Uzdevumi bez norādīta datuma tiek attēloti pēc uzdevumiem ar datumu, saglabājot to pievienošanas secību.
+Ierobežojumi: neviena funkcija nedrīkst būt garāka par 30 rindām (ja nepieciešams, izveido atsevišķu salīdzināšanas palīgfunkciju), saskarne un komentāri latviešu valodā.
+Vispirms parādi plānu un atgriez tikai mainītās un jaunās funkcijas.
+

@@ -76,9 +76,24 @@ function createTaskId() {
 }
 
 function getVisibleTasks() {
-  if (activeFilter === "active") return tasks.filter((task) => !task.done);
-  if (activeFilter === "completed") return tasks.filter((task) => task.done);
-  return tasks;
+  const visibleTasks = tasks
+    .filter((task) => activeFilter === "active" ? !task.done :
+      activeFilter === "completed" ? task.done : true)
+    .map((task, index) => ({ task, index }));
+  return visibleTasks.sort(compareVisibleTasks).map(({ task }) => task);
+}
+
+function compareVisibleTasks(first, second) {
+  const completionOrder = Number(first.task.done) - Number(second.task.done);
+  if (completionOrder) return completionOrder;
+  const firstDate = first.task.dueDate;
+  const secondDate = second.task.dueDate;
+  if (firstDate && secondDate && firstDate !== secondDate) {
+    return firstDate < secondDate ? -1 : 1;
+  }
+  if (firstDate && !secondDate) return -1;
+  if (!firstDate && secondDate) return 1;
+  return first.index - second.index;
 }
 
 function getTodayDate() {
