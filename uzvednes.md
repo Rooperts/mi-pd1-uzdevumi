@@ -17,3 +17,17 @@ Ierobežojumi: saskarne un komentāri latviešu valodā, teksta attēlošanai li
 Izvades formāts: katrs fails atsevišķā koda blokā ar faila nosaukumu.
 Pēc koda 3 teikumos paskaidro, kā palaist.
 Ja kaut kas nav skaidrs, pirms koda uzdod man jautājumus.
+
+# Kļūdas nodošana
+
+Lietotnē ir kļūda.
+Darbības: 1) ... 2) ...
+Gaidītais rezultāts: ...
+Faktiskais rezultāts: ...
+Konsoles kļūda (ja ir): <pilns kļūdas teksts>
+Fails un funkcija: app.js, <funkcijas nosaukums>
+// SĀKUMS
+<ievieto tikai šo funkciju>
+// BEIGAS
+Izlabo tikai šo funkciju. Ja vajadzīgas izmaiņas citur, vispirms paskaidro, kāpēc.
+Atgriez tikai izlaboto funkciju un vienā teikumā paskaidro cēloni.
