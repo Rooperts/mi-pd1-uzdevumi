@@ -219,15 +219,40 @@ h1 {
   cursor: pointer;
 }
 
-.task-edit-input {
-  width: 100%;
+.task-edit-fields {
+  display: grid;
   min-width: 0;
   flex: 1;
-  padding: 6px 8px;
-  border: 1px solid var(--accent);
-  border-radius: 6px;
-  outline: none;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 7px;
+}
+
+.task-edit-fields input {
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: #fff;
   color: inherit;
+}
+
+.task-edit-fields input:focus {
+  border-color: var(--accent);
+}
+
+.task-edit-date {
+  width: 155px;
+}
+
+.due-date-chip {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #edf0ff;
+  color: #4859bd;
+  font-size: 0.72rem;
+  font-weight: 650;
 }
 
 .task-text {
@@ -325,6 +350,14 @@ input:focus-visible {
   .task-form #task-due-date {
     width: 100%;
     flex-basis: auto;
+  }
+
+  .task-edit-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .task-edit-date {
+    width: 100%;
   }
 
   .add-btn {

@@ -10,7 +10,7 @@ const filterButtons = document.querySelectorAll("[data-filter]");
 
 let tasks = loadTasks();
 let activeFilter = "all";
-let activeEditInput = null;
+let activeTaskEdit = null;
 
 function isValidDueDate(value) {
   if (value === undefined || value === null) return true;
@@ -20,6 +20,13 @@ function isValidDueDate(value) {
     new Date(value).toISOString().slice(0, 10) === value;
 }
 
+function isValidDueDateEdit(task) {
+  const validFlag = task.dueDateEdited === undefined ||
+    typeof task.dueDateEdited === "boolean";
+  return validFlag && isValidDueDate(task.dueDatePrevious) &&
+    (!task.dueDateEdited || Boolean(task.dueDate && task.dueDatePrevious));
+}
+
 function isValidTasks(value) {
   if (!Array.isArray(value)) return false;
   const ids = new Set();
@@ -27,6 +34,7 @@ function isValidTasks(value) {
     const valid = task && typeof task.id === "string" &&
       typeof task.text === "string" && typeof task.done === "boolean" &&
       isValidDueDate(task.dueDate) &&
+      isValidDueDateEdit(task) &&
       !ids.has(task.id);
     if (valid) ids.add(task.id);
     return valid;
@@ -94,9 +102,17 @@ function createDueDateElement(task) {
   const label = document.createElement("span");
   label.className = "task-due-date";
   label.textContent = `Termiņš: ${formatDueDate(task.dueDate)}`;
+  if (task.dueDateEdited && task.dueDatePrevious) {
+    const chip = document.createElement("span");
+    chip.className = "due-date-chip";
+    chip.textContent = task.dueDate > task.dueDatePrevious
+      ? "Pagarināts"
+      : "Termiņš labots";
+    label.append(" ", chip);
+  }
   if (isTaskOverdue(task)) {
     label.classList.add("is-overdue");
-    label.textContent += " · Nokavēts";
+    label.append(" · Nokavēts");
   }
   return label;
 }
@@ -131,7 +147,7 @@ function createTaskElement(task) {
 }
 
 function renderTasks() {
-  activeEditInput = null;
+  activeTaskEdit = null;
   const visibleTasks = getVisibleTasks();
   taskList.replaceChildren(...visibleTasks.map(createTaskElement));
   emptyState.hidden = visibleTasks.length > 0;
@@ -189,55 +205,92 @@ function selectFilter(event) {
 }
 
 function beginTaskEdit(event) {
-  const text = event.target.closest(".task-text");
-  if (!text || activeEditInput) return;
-  const input = document.createElement("input");
-  input.type = "text";
-  input.className = "task-edit-input";
-  input.maxLength = 200;
-  input.value = text.textContent;
-  input.setAttribute("aria-label", "Rediģēt uzdevumu");
-  input.addEventListener("blur", handleEditBlur);
-  activeEditInput = input;
-  text.replaceWith(input);
-  input.focus();
-  input.select();
+  const target = event.target.closest(".task-text, .task-due-date");
+  if (!target || activeTaskEdit) return;
+  const item = target.closest(".task-item");
+  const task = tasks.find((entry) => entry.id === item.dataset.id);
+  if (!task) return;
+  activeTaskEdit = createTaskEditFields(task);
+  activeTaskEdit.item = item;
+  item.querySelector(".task-text").remove();
+  item.querySelector(".task-due-date")?.remove();
+  item.insertBefore(activeTaskEdit.fields, item.querySelector(".delete-btn"));
+  activeTaskEdit.textInput.focus();
+  activeTaskEdit.textInput.select();
+}
+
+function createTaskEditFields(task) {
+  const fields = document.createElement("div");
+  fields.className = "task-edit-fields";
+  const textInput = document.createElement("input");
+  textInput.type = "text";
+  textInput.className = "task-edit-text";
+  textInput.maxLength = 200;
+  textInput.value = task.text;
+  textInput.setAttribute("aria-label", "Uzdevuma teksts");
+  const dateInput = document.createElement("input");
+  dateInput.type = "date";
+  dateInput.className = "task-edit-date";
+  dateInput.value = task.dueDate || "";
+  dateInput.setAttribute("aria-label", "Izpildes datums");
+  textInput.addEventListener("blur", handleEditBlur);
+  dateInput.addEventListener("blur", handleEditBlur);
+  fields.append(textInput, dateInput);
+  return { fields, textInput, dateInput };
 }
 
 function handleEditKeydown(event) {
-  if (event.target !== activeEditInput) return;
+  if (!activeTaskEdit ||
+      (event.target !== activeTaskEdit.textInput &&
+        event.target !== activeTaskEdit.dateInput)) return;
   if (event.key === "Enter") {
     event.preventDefault();
-    saveTaskEdit(event.target);
+    saveTaskEdit();
   } else if (event.key === "Escape") {
     event.preventDefault();
-    cancelTaskEdit(event.target);
+    cancelTaskEdit();
   }
 }
 
 function handleEditBlur(event) {
-  saveTaskEdit(event.currentTarget);
+  if (activeTaskEdit?.fields.contains(event.relatedTarget)) return;
+  saveTaskEdit();
 }
 
-function saveTaskEdit(input) {
-  if (input !== activeEditInput) return;
-  const item = input.closest(".task-item");
-  const task = tasks.find((entry) => entry.id === item.dataset.id);
-  const text = input.value.trim();
+function updateDueDateEdit(task, previousDate, newDate) {
+  if (previousDate && newDate && previousDate !== newDate) {
+    task.dueDateEdited = true;
+    task.dueDatePrevious = previousDate;
+  } else if (!previousDate || !newDate) {
+    delete task.dueDateEdited;
+    delete task.dueDatePrevious;
+  }
+}
+
+function saveTaskEdit() {
+  if (!activeTaskEdit) return;
+  const { textInput, dateInput } = activeTaskEdit;
+  const task = tasks.find((entry) => entry.id === activeTaskEdit.item.dataset.id);
+  const text = textInput.value.trim();
   if (!text) {
     statusMessage.textContent = "Uzdevuma teksts nevar būt tukšs.";
-    input.focus();
+    textInput.focus();
     return;
   }
-  if (task) task.text = text;
-  activeEditInput = null;
+  if (!task) return cancelTaskEdit();
+  const previousDate = task.dueDate || null;
+  const newDate = dateInput.value || null;
+  updateDueDateEdit(task, previousDate, newDate);
+  task.text = text;
+  task.dueDate = newDate;
+  activeTaskEdit = null;
   saveTasks();
   renderTasks();
 }
 
-function cancelTaskEdit(input) {
-  if (input !== activeEditInput) return;
-  activeEditInput = null;
+function cancelTaskEdit() {
+  if (!activeTaskEdit) return;
+  activeTaskEdit = null;
   if (statusMessage.textContent === "Uzdevuma teksts nevar būt tukšs.") {
     statusMessage.textContent = "";
   }

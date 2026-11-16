@@ -65,3 +65,12 @@ Vispirms parādi plānu: kuras funkcijas mainīsi un kuras pievienosi.
 Jaunu loģiku liec atsevišķā funkcijā.
 Atgriez tikai mainītās un jaunās funkcijas.
 
+# Papildfunkciju A un B apvienošana (termiņa rediģēšana)
+
+Papildini uzdevuma rediģēšanas un termiņa funkcionalitāti:
+1. Veicot dubultklikšķi uz uzdevuma (vai tā datuma), atveras rediģēšanas režīms gan uzdevuma tekstam, gan datuma laukam (<input type="date">), kur var mainīt vai pievienot izpildes datumu.
+2. Enter saglabā gan tekstu, gan jauno datumu; Esc atceļ izmaiņas.
+3. Ja uzdevumam jau bija termiņš un tas tiek mainīts uz citu datumu, uzdevuma objektā saglabā karodziņu (piemēram, dueDateEdited: true) un pie uzdevuma blakus datumam parādi nelielu vizuālu iezīmi (čipsi) ar tekstu "Termiņš labots" (vai "Pagarināts", ja jaunais datums ir vēlāks par iepriekšējo).
+Ierobežojumi: neviena funkcija nedrīkst būt garāka par 30 rindām (ja nepieciešams, sadali rediģēšanas sākšanu un saglabāšanu atsevišķās palīgfunkcijās), saskarne un komentāri latviešu valodā, teksta attēlošanai lieto textContent.
+Vispirms parādi plānu un atgriez tikai mainītās un jaunās funkcijas.
+
