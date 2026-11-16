@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>Mani uzdevumi</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <p class="eyebrow">Tavs dienas plāns</p>
+      <h1>Mani uzdevumi</h1>
+      <p class="intro">Pieraksti svarīgo un atzīmē paveikto.</p>
+    </header>
+
+    <section class="task-panel" aria-label="Uzdevumu saraksts">
+      <form class="task-form" id="task-form">
+        <label class="visually-hidden" for="task-input">Jauns uzdevums</label>
+        <input
+          id="task-input"
+          name="task"
+          type="text"
+          placeholder="Piemēram, izlasīt grāmatu"
+          autocomplete="off"
+          maxlength="200"
+        >
+        <button class="add-btn" id="add-btn" type="submit">Pievienot</button>
+      </form>
+
+      <div class="list-heading">
+        <h2>Uzdevumu saraksts</h2>
+        <p id="counter" class="counter" aria-live="polite">Atlikuši 0 uzdevumi</p>
+      </div>
+
+      <nav class="filters" aria-label="Uzdevumu filtrs">
+        <button class="filter-btn is-active" type="button" data-filter="all" aria-pressed="true">Visi</button>
+        <button class="filter-btn" type="button" data-filter="active" aria-pressed="false">Aktīvie</button>
+        <button class="filter-btn" type="button" data-filter="completed" aria-pressed="false">Izpildītie</button>
+      </nav>
+
+      <ul class="task-list" id="task-list" aria-label="Uzdevumi"></ul>
+      <p class="empty-state" id="empty-state">Pagaidām nav neviena uzdevuma. Pievieno pirmo!</p>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </section>
+    <footer>Uzdevumi tiek saglabāti šajā pārlūkprogrammā.</footer>
+  </main>
+</body>
+</html>
