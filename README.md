@@ -22,3 +22,7 @@ Atveriet failu `index.html` tīmekļa pārlūkā. Instalēšana un papildu serve
 - `style.css` — lietotnes izskats, tostarp pielāgojumi šaurākiem ekrāniem.
 - `app.js` — uzdevumu pievienošana, rediģēšana, kārtošana, filtrēšana un datu saglabāšana.
 - `uzvednes.md` — projekta uzdevuma apraksts un ar lietotni saistītās izmaiņu uzvednes.
+
+## Izmantotie rīki
+
+Lietotnes izstrādē izmantots **GitHub Copilot**.
