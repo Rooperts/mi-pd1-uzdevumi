@@ -1,6 +1,7 @@
 const STORAGE_KEY = "pd1-uzdevumi";
 const taskForm = document.querySelector("#task-form");
 const taskInput = document.querySelector("#task-input");
+const dueDateInput = document.querySelector("#task-due-date");
 const taskList = document.querySelector("#task-list");
 const counter = document.querySelector("#counter");
 const emptyState = document.querySelector("#empty-state");
@@ -9,6 +10,15 @@ const filterButtons = document.querySelectorAll("[data-filter]");
 
 let tasks = loadTasks();
 let activeFilter = "all";
+let activeEditInput = null;
+
+function isValidDueDate(value) {
+  if (value === undefined || value === null) return true;
+  return typeof value === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    !Number.isNaN(Date.parse(value)) &&
+    new Date(value).toISOString().slice(0, 10) === value;
+}
 
 function isValidTasks(value) {
   if (!Array.isArray(value)) return false;
@@ -16,6 +26,7 @@ function isValidTasks(value) {
   return value.every((task) => {
     const valid = task && typeof task.id === "string" &&
       typeof task.text === "string" && typeof task.done === "boolean" &&
+      isValidDueDate(task.dueDate) &&
       !ids.has(task.id);
     if (valid) ids.add(task.id);
     return valid;
@@ -62,9 +73,38 @@ function getVisibleTasks() {
   return tasks;
 }
 
+function getTodayDate() {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${today.getFullYear()}-${month}-${day}`;
+}
+
+function isTaskOverdue(task) {
+  return !task.done && Boolean(task.dueDate) && task.dueDate < getTodayDate();
+}
+
+function formatDueDate(date) {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("lv-LV");
+}
+
+function createDueDateElement(task) {
+  if (!task.dueDate) return null;
+  const label = document.createElement("span");
+  label.className = "task-due-date";
+  label.textContent = `Termiņš: ${formatDueDate(task.dueDate)}`;
+  if (isTaskOverdue(task)) {
+    label.classList.add("is-overdue");
+    label.textContent += " · Nokavēts";
+  }
+  return label;
+}
+
 function createTaskElement(task) {
   const item = document.createElement("li");
   item.className = `task-item${task.done ? " is-done" : ""}`;
+  if (isTaskOverdue(task)) item.classList.add("is-overdue");
   item.dataset.id = task.id;
 
   const checkbox = document.createElement("input");
@@ -84,11 +124,14 @@ function createTaskElement(task) {
   deleteButton.textContent = "Dzēst";
   deleteButton.setAttribute("aria-label", `Dzēst uzdevumu “${task.text}”`);
 
-  item.append(checkbox, text, deleteButton);
+  const dueDate = createDueDateElement(task);
+  if (dueDate) item.append(checkbox, text, dueDate, deleteButton);
+  else item.append(checkbox, text, deleteButton);
   return item;
 }
 
 function renderTasks() {
+  activeEditInput = null;
   const visibleTasks = getVisibleTasks();
   taskList.replaceChildren(...visibleTasks.map(createTaskElement));
   emptyState.hidden = visibleTasks.length > 0;
@@ -101,12 +144,14 @@ function renderTasks() {
 function addTask(event) {
   event.preventDefault();
   const text = taskInput.value.trim();
+  const dueDate = dueDateInput.value;
   if (!text) {
     taskInput.focus();
     return;
   }
-  tasks.push({ id: createTaskId(), text, done: false });
+  tasks.push({ id: createTaskId(), text, done: false, dueDate: dueDate || null });
   taskInput.value = "";
+  dueDateInput.value = "";
   saveTasks();
   renderTasks();
   taskInput.focus();
@@ -145,30 +190,37 @@ function selectFilter(event) {
 
 function beginTaskEdit(event) {
   const text = event.target.closest(".task-text");
-  if (!text || event.target.closest(".task-edit-input")) return;
+  if (!text || activeEditInput) return;
   const input = document.createElement("input");
   input.type = "text";
   input.className = "task-edit-input";
   input.maxLength = 200;
   input.value = text.textContent;
   input.setAttribute("aria-label", "Rediģēt uzdevumu");
+  input.addEventListener("blur", handleEditBlur);
+  activeEditInput = input;
   text.replaceWith(input);
   input.focus();
   input.select();
 }
 
 function handleEditKeydown(event) {
-  if (!event.target.matches(".task-edit-input")) return;
+  if (event.target !== activeEditInput) return;
   if (event.key === "Enter") {
     event.preventDefault();
     saveTaskEdit(event.target);
   } else if (event.key === "Escape") {
     event.preventDefault();
-    cancelTaskEdit();
+    cancelTaskEdit(event.target);
   }
 }
 
+function handleEditBlur(event) {
+  saveTaskEdit(event.currentTarget);
+}
+
 function saveTaskEdit(input) {
+  if (input !== activeEditInput) return;
   const item = input.closest(".task-item");
   const task = tasks.find((entry) => entry.id === item.dataset.id);
   const text = input.value.trim();
@@ -177,12 +229,15 @@ function saveTaskEdit(input) {
     input.focus();
     return;
   }
-  task.text = text;
+  if (task) task.text = text;
+  activeEditInput = null;
   saveTasks();
   renderTasks();
 }
 
-function cancelTaskEdit() {
+function cancelTaskEdit(input) {
+  if (input !== activeEditInput) return;
+  activeEditInput = null;
   if (statusMessage.textContent === "Uzdevuma teksts nevar būt tukšs.") {
     statusMessage.textContent = "";
   }

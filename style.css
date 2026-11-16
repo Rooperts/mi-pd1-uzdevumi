@@ -88,6 +88,17 @@ h1 {
   transition: border-color 150ms, box-shadow 150ms;
 }
 
+.task-form #task-input {
+  flex: 1 1 auto;
+}
+
+.task-form #task-due-date {
+  width: 160px;
+  min-width: 140px;
+  flex: 0 1 160px;
+  padding: 13px 10px;
+}
+
 .task-form input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px #5266d820;
@@ -180,6 +191,23 @@ h1 {
   border: 1px solid var(--border);
   border-radius: 11px;
   animation: appear 180ms ease-out;
+}
+
+.task-item.is-overdue {
+  border-color: #efb2b7;
+  background: #fff8f8;
+}
+
+.task-due-date {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.task-due-date.is-overdue {
+  color: #b4232f;
+  font-weight: 700;
 }
 
 .task-item input[type="checkbox"] {
@@ -292,6 +320,11 @@ input:focus-visible {
 
   .task-form {
     flex-direction: column;
+  }
+
+  .task-form #task-due-date {
+    width: 100%;
+    flex-basis: auto;
   }
 
   .add-btn {
