@@ -83,3 +83,18 @@ Papildini uzdevumu attēlošanas kārtību funkcijā getVisibleTasks (nemainot o
 Ierobežojumi: neviena funkcija nedrīkst būt garāka par 30 rindām (ja nepieciešams, izveido atsevišķu salīdzināšanas palīgfunkciju), saskarne un komentāri latviešu valodā.
 Vispirms parādi plānu un atgriez tikai mainītās un jaunās funkcijas.
 
+# Dokumentācija: README.md atjaunināšana
+
+Atjaunini failu README.md latviešu valodā, balstoties uz pašreizējo projekta kodu (nemainot citus failus).
+Iekļauj šādas sadaļas:
+1. Projekta nosaukums un īss apraksts ("Mani uzdevumi" — tīmekļa lietotne ikdienas uzdevumu plānošanai un uzskaitei).
+2. Galvenās funkcijas:
+   - uzdevumu pievienošana, atzīmēšana kā izpildītus un dzēšana;
+   - filtrēšana (Visi / Aktīvie / Izpildītie) un aktīvo uzdevumu skaitītājs;
+   - uzdevumu teksta un termiņa rediģēšana (dubultklikšķis, Enter saglabā, Esc atceļ, termiņa labojuma iezīme "Pagarināts" / "Termiņš labots");
+   - neobligāts izpildes termiņš ar nokavēto uzdevumu iezīmēšanu sarkanā krāsā ("Nokavēts");
+   - automātiska saraksta kārtošana pēc statusa un termiņa hronoloģiskā secībā;
+   - datu saglabāšana pārlūkprogrammas localStorage.
+3. Kā palaist lietotni (vienkārši atverot failu index.html tīmekļa pārlūkā).
+4. Projekta struktūra (īss failu index.html, style.css, app.js, uzvednes.md apraksts).
+
