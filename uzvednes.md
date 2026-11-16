@@ -31,3 +31,10 @@ Fails un funkcija: app.js, <funkcijas nosaukums>
 // BEIGAS
 Izlabo tikai šo funkciju. Ja vajadzīgas izmaiņas citur, vispirms paskaidro, kāpēc.
 Atgriez tikai izlaboto funkciju un vienā teikumā paskaidro cēloni.
+
+# Papildfunkcija A
+
+Pievieno funkciju: Rediģēšana — dubultklikšķis uz uzdevuma teksta ļauj to mainīt, Enter saglabā, Esc atceļ.
+Vispirms parādi plānu: kuras funkcijas mainīsi un kuras pievienosi.
+Jaunu loģiku liec atsevišķā funkcijā (neviena funkcija nav garāka par 30 rindām).
+Atgriez tikai mainītās un jaunās funkcijas.

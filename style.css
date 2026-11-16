@@ -182,13 +182,24 @@ h1 {
   animation: appear 180ms ease-out;
 }
 
-.task-item input {
+.task-item input[type="checkbox"] {
   width: 18px;
   height: 18px;
   flex: 0 0 auto;
   margin: 0;
   accent-color: var(--accent);
   cursor: pointer;
+}
+
+.task-edit-input {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  outline: none;
+  color: inherit;
 }
 
 .task-text {

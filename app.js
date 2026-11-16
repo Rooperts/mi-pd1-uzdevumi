@@ -143,9 +143,57 @@ function selectFilter(event) {
   renderTasks();
 }
 
+function beginTaskEdit(event) {
+  const text = event.target.closest(".task-text");
+  if (!text || event.target.closest(".task-edit-input")) return;
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "task-edit-input";
+  input.maxLength = 200;
+  input.value = text.textContent;
+  input.setAttribute("aria-label", "Rediģēt uzdevumu");
+  text.replaceWith(input);
+  input.focus();
+  input.select();
+}
+
+function handleEditKeydown(event) {
+  if (!event.target.matches(".task-edit-input")) return;
+  if (event.key === "Enter") {
+    event.preventDefault();
+    saveTaskEdit(event.target);
+  } else if (event.key === "Escape") {
+    event.preventDefault();
+    cancelTaskEdit();
+  }
+}
+
+function saveTaskEdit(input) {
+  const item = input.closest(".task-item");
+  const task = tasks.find((entry) => entry.id === item.dataset.id);
+  const text = input.value.trim();
+  if (!text) {
+    statusMessage.textContent = "Uzdevuma teksts nevar būt tukšs.";
+    input.focus();
+    return;
+  }
+  task.text = text;
+  saveTasks();
+  renderTasks();
+}
+
+function cancelTaskEdit() {
+  if (statusMessage.textContent === "Uzdevuma teksts nevar būt tukšs.") {
+    statusMessage.textContent = "";
+  }
+  renderTasks();
+}
+
 taskForm.addEventListener("submit", addTask);
 taskList.addEventListener("change", updateTaskCompletion);
 taskList.addEventListener("click", deleteTask);
+taskList.addEventListener("dblclick", beginTaskEdit);
+taskList.addEventListener("keydown", handleEditKeydown);
 document.querySelector(".filters").addEventListener("click", selectFilter);
 
 renderTasks();
